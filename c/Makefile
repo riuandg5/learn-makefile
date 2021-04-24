@@ -1,8 +1,8 @@
 # default make target
-build:
-	gcc main.c src/am.c src/gm.c src/hm/hm.c -Iinc -o main.out -lm
+build: main.c src/am.c src/gm.c src/hm/hm.c
+	gcc $^ -Iinc -o main.out -lm
 
-run:
+run: build
 	./main.out
 
 clean:

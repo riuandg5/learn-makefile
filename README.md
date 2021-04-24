@@ -246,3 +246,83 @@ rm -f main.out
 * By default GNU make processes the rule it encounters first when reading a Makefile from top to bottom.
 
 * By default GNU make finds a Makefile to process in the current working directory. For other options like mentioning the directory to look into (`make -C dir_name`), mentioning the file itself(`make -f makefile_name`), etc. see `make --help` in the shell.
+
+#### Limitations to v1:
+* It is not automation at all. We have to edit the `build` recipe whenever we add or remove new files to the `src` folder.
+* It does not track changes to the files and builds from scratch every time the `build` target is invoked.
+* `run` target cannot be invoked before invoking `build` target successfully.
+
+### Makefile v2
+```Makefile
+# default make target
+build: main.c src/am.c src/gm.c src/hm/hm.c
+	gcc $^ -Iinc -o main.out -lm
+
+run: build
+	./main.out
+
+clean:
+	rm -f main.out
+```
+
+#### Output:
+```shell
+⟩ make clean
+rm -f main.out
+
+⟩ make run
+gcc main.c src/am.c src/gm.c src/hm/hm.c -Iinc -o main.out -lm
+./main.out
+AM of 4.000000 and 9.000000 = 6.500000
+GM of 4.000000 and 9.000000 = 6.000000
+HM of 4.000000 and 9.000000 = 5.538462
+```
+* We invoked the `clean` target to remove the `main.out` program.
+* We invoked the `run` target directly which invoked the `build` target as it depends on `build` target to compile the `main.out` program first and then executes it.
+
+#### Learning:
+* Writing dependent rules in a Makefile:
+  ```Makefile
+  target: dependencies or pre-requisites
+    recipe
+  ```
+
+  `target`: name of the rule which can be invoked by writing `make target` in the shell.
+
+  `dependencies`: things on which our target depends.
+
+  `recipe`: these are the instructions to run only when the target is invoked and all dependencies exist or prerequisites fulfill.
+
+* A dependency of a target can be in itself a target. If a dependency exists or fulfills the pre-requisites then the main target recipe is processed directly else the dependency target is first invoked, processing its recipes and then the main target recipe is processed.
+
+* Try yourself
+
+  Write this into a Makefile and call `make my_target` in shell.
+  ```Makefile
+  # default make target
+  my_target: my_dependency
+    echo done my_target
+  
+  my_dependency:
+    echo done my_dependency
+  ```
+
+* `$^` is an automatic variable which has the names of all the prerequisites, with spaces between them. If you list a prerequisite more than once for a target, the value of `$^` will contain just one copy of the name.
+
+* Try yourself
+
+  Write this into a Makefile and call `make my_target` in shell.
+  ```Makefile
+  # default make target
+  my_target: dependency_1 dependency_2 dependency_3
+    echo done my_target after completing $^
+  
+  dependency_1:
+    echo done dependency_1
+
+  dependency_2:
+    echo done dependency_1
+
+  dependency_3:
+    echo done dependency_1
+  ```
