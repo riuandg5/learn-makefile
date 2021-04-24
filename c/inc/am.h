@@ -4,3 +4,4 @@
 int arithmetic_mean(float *n1, float *n2, float *am);
 
 #endif /* #define __AM_H__ */
+// change made for output of Makefile v4
