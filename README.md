@@ -150,3 +150,96 @@ int harmonic_mean(float *n1, float *n2, float *am)
 We hope you are comfortable enough in the C programming language to understand these simple codes.
 
 So let's now dive into building our project.
+
+### Makefile v1
+```Makefile
+# default make target
+build:
+	gcc main.c src/am.c src/gm.c src/hm/hm.c -Iinc -o main.out -lm
+
+run:
+	./main.out
+
+clean:
+	rm -f main.out
+```
+
+#### Output:
+```shell
+⟩ make
+gcc main.c src/am.c src/gm.c src/hm/hm.c -Iinc -o main.out -lm
+
+⟩ tree --dirsfirst
+.
+├── inc
+│   ├── gm
+│   │   └── gm.h
+│   ├── am.h
+│   ├── hm.h
+│   └── mean.h
+├── src
+│   ├── hm
+│   │   └── hm.c
+│   ├── am.c
+│   └── gm.c
+├── main.c
+├── main.out
+└── Makefile
+
+4 directories, 10 files
+
+⟩ make run
+./main.out
+AM of 4.000000 and 9.000000 = 6.500000
+GM of 4.000000 and 9.000000 = 6.000000
+HM of 4.000000 and 9.000000 = 5.538462
+
+⟩ make clean
+rm -f main.out
+
+⟩ tree --dirsfirst
+.
+├── inc
+│   ├── gm
+│   │   └── gm.h
+│   ├── am.h
+│   ├── hm.h
+│   └── mean.h
+├── src
+│   ├── hm
+│   │   └── hm.c
+│   ├── am.c
+│   └── gm.c
+├── main.c
+└── Makefile
+
+4 directories, 9 files
+```
+* We invoked the `build` target which compiles the `main.out` program. It is the same as we would have done it in the shell using the same `gcc` command.
+* We invoked the `run` target which just executes the `main.out` program.
+* We invoked the `clean` target which just deletes the `main.out` program.
+
+#### Learning:
+* Writing standalone rules in a Makefile:
+  ```Makefile
+  target:
+    recipe
+  ```
+
+  `target`: name of the rule which can be invoked by writing `make target` in the shell.
+
+  `recipe`: these are the instructions to run when the target is invoked.
+
+* Try yourself
+  
+  Write this into a Makefile and call `make my_target` in the shell.
+  ```Makefile
+  my_target:
+    echo done my_target
+  ```
+
+* We can define many rules in a Makefile.
+
+* By default GNU make processes the rule it encounters first when reading a Makefile from top to bottom.
+
+* By default GNU make finds a Makefile to process in the current working directory. For other options like mentioning the directory to look into (`make -C dir_name`), mentioning the file itself(`make -f makefile_name`), etc. see `make --help` in the shell.
