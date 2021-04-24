@@ -326,3 +326,55 @@ HM of 4.000000 and 9.000000 = 5.538462
   dependency_3:
     echo done dependency_1
   ```
+
+#### Limitations to v2:
+* It is still not automated. We have to edit the `build` dependency whenever we add or remove new files to the `src` folder. Even if we add more include directories we have to edit the recipe of `build` target specifying more include paths with `-I` prefix in `gcc` command.
+* It still does not track changes to the files and builds from scratch every time the `build` target is invoked.
+
+### Makefile v3
+```Makefile
+# default make target
+build: main.out
+
+main.out: main.c src/am.c src/gm.c src/hm/hm.c
+	gcc $^ -Iinc -o $@ -lm
+
+run: build
+	./main.out
+
+clean:
+	rm -f main.out
+```
+
+#### Output:
+```shell
+⟩ make clean
+rm -f main.out
+
+⟩ make
+gcc main.c src/am.c src/gm.c src/hm/hm.c -Iinc -o main.out -lm
+
+⟩ make
+make: Nothing to be done for 'build'.
+```
+* We invoked the `clean` target to remove the `main.out` program.
+* We invoked the `build` target (by just calling `make` in the shell as it is the default make target) which depends on `main.out` hence invoked the `main.out` target to compile itself using given dependencies (`main.c src/am.c src/gm.c src/hm/hm.c`).
+* We again invoked the `build` target which depends on `main.out` hence invoked the `main.out` target but it doesn't run the compiling recipe because none of the dependency has changed.
+* Now if we make any changes in dependencies of the `main.out` target then only the compiling recipe will be processed.
+
+#### Learning:
+* Writing file name as target name enables dependency tracking.
+
+* `$@` is an automatic variable which has the name of the target of the rule.
+
+* Try yourself
+
+  Write this into a Makefile and call `make my_target` in shell.
+  ```Makefile
+   # default make target
+  my_target: my_dependency
+    echo done $@
+  
+  my_dependency:
+    echo done $@
+  ```
