@@ -11,6 +11,9 @@ Building an executable from a single source code file is not the point of discus
 Makefile helps in grouping these sets of instructions in a proper fashion so that we can focus more on writing code than on building it. Other than just building executables, we can write Makefiles to perform tests, analyze codes, cleanup, etc. with the help of other utilities of course.
 
 ## Example
+
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/riuandg5/learn-makefile/C%20CI?style=for-the-badge) ![GitHub issues](https://img.shields.io/github/issues/riuandg5/learn-makefile?style=for-the-badge) ![GitHub](https://img.shields.io/github/license/riuandg5/learn-makefile?style=for-the-badge)
+
 We will try to learn and understand the use of Makefile by writing our own for a very simple C project.
 
 All files related to this example can be found in the folder named `c`. We have updated the Makefile from a very basic version to the latest one explaining all the new things introduced.
