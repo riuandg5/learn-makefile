@@ -356,11 +356,35 @@ gcc main.c src/am.c src/gm.c src/hm/hm.c -Iinc -o main.out -lm
 
 ⟩ make
 make: Nothing to be done for 'build'.
+
+⟩ code -r main.c
+
+⟩ git status main.c
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   main.c
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+⟩ make
+gcc main.c src/am.c src/gm.c src/hm/hm.c -Iinc -o main.out -lm
+
+⟩ make run
+./main.out
+AM of 5.000000 and 9.000000 = 7.000000
+GM of 5.000000 and 9.000000 = 6.708204
+HM of 5.000000 and 9.000000 = 6.428571
 ```
 * We invoked the `clean` target to remove the `main.out` program.
 * We invoked the `build` target (by just calling `make` in the shell as it is the default make target) which depends on `main.out` hence invoked the `main.out` target to compile itself using given dependencies (`main.c src/am.c src/gm.c src/hm/hm.c`).
 * We again invoked the `build` target which depends on `main.out` hence invoked the `main.out` target but it doesn't run the compiling recipe because none of the dependency has changed.
-* Now if we make any changes in dependencies of the `main.out` target then only the compiling recipe will be processed.
+* We made a change in `main.c` using VSCode. We changed the value of `n1` to `5`. The modification can be verified by the output of `git status main.c`.
+* We again invoked the `build` target which depends on `main.out` hence invoked the `main.out` target and this time it detects a change in dependency and runs the compiling recipe.
+* We invoked the `run` target which depends on the `build` target which itself depends on the `main.out` target which is up to date and hence directly processes the recipe of `run` target. You can view the output that the value of `n1` is `5`.
 
 #### Learning:
 * Writing file name as target name enables dependency tracking.

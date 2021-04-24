@@ -3,7 +3,7 @@
 
 int main()
 {
-    float n1 = 4, n2 = 9;
+    float n1 = 5, n2 = 9;
     float am, gm, hm;
 
     arithmetic_mean(&n1, &n2, &am);
