@@ -224,22 +224,22 @@ rm -f main.out
 
 #### Learning:
 * Writing standalone rules in a Makefile:
-  ```Makefile
-  target:
-    recipe
-  ```
+	```Makefile
+	target:
+		recipe
+	```
 
-  `target`: name of the rule which can be invoked by writing `make target` in the shell.
+	`target`: name of the rule which can be invoked by writing `make target` in the shell.
 
-  `recipe`: these are the instructions to run when the target is invoked.
+	`recipe`: these are the instructions to run when the target is invoked.
 
 * Try yourself
   
-  Write this into a Makefile and call `make my_target` in the shell.
-  ```Makefile
-  my_target:
-    echo done my_target
-  ```
+	Write this into a Makefile and call `make my_target` in the shell.
+	```Makefile
+	my_target:
+		echo done my_target
+	```
 
 * We can define many rules in a Makefile.
 
@@ -282,50 +282,50 @@ HM of 4.000000 and 9.000000 = 5.538462
 
 #### Learning:
 * Writing dependent rules in a Makefile:
-  ```Makefile
-  target: dependencies or pre-requisites
-    recipe
-  ```
+	```Makefile
+	target: dependencies or pre-requisites
+		recipe
+	```
 
-  `target`: name of the rule which can be invoked by writing `make target` in the shell.
+	`target`: name of the rule which can be invoked by writing `make target` in the shell.
 
-  `dependencies`: things on which our target depends.
+	`dependencies`: things on which our target depends.
 
-  `recipe`: these are the instructions to run only when the target is invoked and all dependencies exist or prerequisites fulfill.
+	`recipe`: these are the instructions to run only when the target is invoked and all dependencies exist or prerequisites fulfill.
 
 * A dependency of a target can be in itself a target. If a dependency exists or fulfills the pre-requisites then the main target recipe is processed directly else the dependency target is first invoked, processing its recipes and then the main target recipe is processed.
 
 * Try yourself
 
-  Write this into a Makefile and call `make my_target` in shell.
-  ```Makefile
-  # default make target
-  my_target: my_dependency
-    echo done my_target
-  
-  my_dependency:
-    echo done my_dependency
-  ```
+	Write this into a Makefile and call `make my_target` in shell.
+	```Makefile
+	# default make target
+	my_target: my_dependency
+		echo done my_target
+
+	my_dependency:
+		echo done my_dependency
+	```
 
 * `$^` is an automatic variable which has the names of all the prerequisites, with spaces between them. If you list a prerequisite more than once for a target, the value of `$^` will contain just one copy of the name.
 
 * Try yourself
 
-  Write this into a Makefile and call `make my_target` in shell.
-  ```Makefile
-  # default make target
-  my_target: dependency_1 dependency_2 dependency_3
-    echo done my_target after completing $^
-  
-  dependency_1:
-    echo done dependency_1
+	Write this into a Makefile and call `make my_target` in shell.
+	```Makefile
+	# default make target
+	my_target: dependency_1 dependency_2 dependency_3
+		echo done my_target after completing $^
 
-  dependency_2:
-    echo done dependency_1
+	dependency_1:
+		echo done dependency_1
 
-  dependency_3:
-    echo done dependency_1
-  ```
+	dependency_2:
+		echo done dependency_1
+
+	dependency_3:
+		echo done dependency_1
+	```
 
 #### Limitations to v2:
 * It is still not automated. We have to edit the `build` dependency whenever we add or remove new files to the `src` folder. Even if we add more include directories we have to edit the recipe of `build` target specifying more include paths with `-I` prefix in `gcc` command.
@@ -393,15 +393,15 @@ HM of 5.000000 and 9.000000 = 6.428571
 
 * Try yourself
 
-  Write this into a Makefile and call `make my_target` in shell.
-  ```Makefile
-   # default make target
-  my_target: my_dependency
-    echo done $@
-  
-  my_dependency:
-    echo done $@
-  ```
+	Write this into a Makefile and call `make my_target` in shell.
+	```Makefile
+	# default make target
+	my_target: my_dependency
+		echo done $@
+
+	my_dependency:
+		echo done $@
+	```
 
 #### Limitations to v3:
 * It is still not automated. We have to edit the `main.out` dependency whenever we add or remove new files to the `src` folder. Even if we add more include directories we have to edit the recipe of `main.out` target specifying more include paths with `-I` prefix in `gcc` command.
@@ -524,18 +524,18 @@ HM of 6.000000 and 9.000000 = 7.200000
 
 * Try yourself
 
-  Write this into a Makefile and call `make my_target` in shell.
-  ```Makefile
-   # default make target
-  my_target: dependency_1 dependency_2
-    echo first dependency name is $<
-  
-  dependency_1:
-    echo done dependency_1
+	Write this into a Makefile and call `make my_target` in shell.
+	```Makefile
+	# default make target
+	my_target: dependency_1 dependency_2
+		echo first dependency name is $<
 
-  dependency_2:
-    echo done dependency_1
-  ```
+	dependency_1:
+		echo done dependency_1
+
+	dependency_2:
+		echo done dependency_1
+	```
 
 * `include some_makefile` includes `some_makefile` inside the current Makefile.
 
@@ -625,21 +625,21 @@ HM of 6.000000 and 9.000000 = 7.200000
 
 * Try yourself
 
-  Write this into a Makefile and call `make my_target` in shell.
-  ```Makefile
-  foo1 = $(foo2)
-  foo2 = $(my_var)
+	Write this into a Makefile and call `make my_target` in shell.
+	```Makefile
+	foo1 = $(foo2)
+	foo2 = $(my_var)
 
-  my_var = hi_var_value
+	my_var = hi_var_value
 
-  bar1 = $(my_var)
-  bar2 = $(bar1)
+	bar1 = $(my_var)
+	bar2 = $(bar1)
 
-  # default make target
-  my_target:
-    @echo foo1 = $(foo1)
-    @echo foo2 = $(foo2)
-    @echo my_var = $(my_var)
-    @echo bar1 = $(bar1)
-    @echo bar2 = $(bar2)
-  ```
+	# default make target
+	my_target:
+		@echo foo1 = $(foo1)
+		@echo foo2 = $(foo2)
+		@echo my_var = $(my_var)
+		@echo bar1 = $(bar1)
+		@echo bar2 = $(bar2)
+	```
