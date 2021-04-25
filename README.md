@@ -773,3 +773,139 @@ HM of 6.000000 and 9.000000 = 7.200000
 		@echo my_var = $(my_var)
 		@echo my_new_var = $(my_new_var)
 	```
+
+#### Limitations to v6:
+* Build process makes `*.o` and `*.d` files inside the `src` folder which is not a good practice as it clutters the `src` folder.
+* Values assigned to variables using `=` make variables recursively expandable but none of the variables used are called recursively. It also makes GNU make run slower.
+* If a file exists with a name of a target name then the target recipe is not processed. For example, if a file named `run` exist then the recipe of a target named `run` in Makefile is not processed because it misunderstands the target name with the file name.
+
+### Makefile v7
+```Makefile
+# Variable to store name of final executable
+PROJECT_NAME := main
+
+# Variable to store name of src folder
+SRC_DIR := src
+# Variable to store names of include folders
+INC_DIRS := inc
+# Variable to store name of build folder
+BUILD_DIR := build
+
+# Variable to store path of all sources
+SRCS := main.c $(shell find $(SRC_DIR) -name '*.c')
+# Variable to store path of all object files mapped from path of all sources
+OBJS := $(SRCS:%.c=$(BUILD_DIR)/%.o)
+# Variable to store path of all dependency files mapped from path of all objects
+DEPS := $(OBJS:.o=.d)
+
+# Variable to store name of default compiler
+CC := gcc
+# Variable to store include flags by prefixing -I to include folders
+INC_FLAGS := $(addprefix -I,$(INC_DIRS))
+# Vriable to store C preprocessor settings
+CPPFLAGS := $(INC_FLAGS) -MMD -MP
+# Variable to store warning flags
+WARNINGS := -Wall -Wpedantic -Wextra
+# Variable to store linker flags
+LDFLAGS := -lm
+
+# Variable to store extension of final executable
+EXEC := out
+# Variable to store full name of final executable
+PROJECT_OUTPUT := $(BUILD_DIR)/$(PROJECT_NAME).$(EXEC)
+
+.PHONY: build
+# default make target
+build: $(PROJECT_OUTPUT)
+
+# Build executable by linking object files
+$(PROJECT_OUTPUT): $(OBJS)
+	$(CC) $^ -o $@ $(LDFLAGS)
+
+# Compile C source files
+$(BUILD_DIR)/%.o: %.c
+	mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(WARNINGS) -c $< -o $@
+
+# Include dependencies generated from every c source file
+-include $(DEPS)
+
+.PHONY: run
+# Build executable file and run
+run: build
+	$(PROJECT_OUTPUT)
+
+.PHONY: clean
+# Clean all build files
+clean:
+	rm -rf $(BUILD_DIR)
+```
+
+#### Output:
+```shell
+⟩ make clean
+rm -rf build
+
+⟩ make
+mkdir -p build/
+gcc -Iinc -MMD -MP -Wall -Wpedantic -Wextra -c main.c -o build/main.o
+mkdir -p build/src/
+gcc -Iinc -MMD -MP -Wall -Wpedantic -Wextra -c src/am.c -o build/src/am.o
+mkdir -p build/src/
+gcc -Iinc -MMD -MP -Wall -Wpedantic -Wextra -c src/gm.c -o build/src/gm.o
+mkdir -p build/src/hm/
+gcc -Iinc -MMD -MP -Wall -Wpedantic -Wextra -c src/hm/hm.c -o build/src/hm/hm.o
+gcc build/main.o build/src/am.o build/src/gm.o build/src/hm/hm.o -o build/main.out -lm
+
+⟩ make run
+build/main.out
+AM of 6.000000 and 9.000000 = 7.500000
+GM of 6.000000 and 9.000000 = 7.348469
+HM of 6.000000 and 9.000000 = 7.200000
+```
+* We invoked the `clean` target to remove the `build` folder.
+* We invoked the `build` target (by just calling `make` in the shell as it is the default make target) which depends on `main.out` hence invoked the `main.out` target to compile itself using object files. As these object files do not exist so they invoke compilation of C source codes in sequence which generates corresponding object file and dependency file inside the build folder. After having all object files ready, the linking recipe of `main.out` target is processed.
+* We invoked the `run` target which depends on the `build` target which itself depends on the `main.out` target which is up to date and hence directly processes the recipe of `run` target.
+
+#### Learning:
+* `var_name := var_value` is used to assign value to a variable like `=`. But when `:=` is used then variable is called simply expanded variable. That is, it cannot be used to substitute values recursively.
+
+* Try yourself
+
+	Write this into a Makefile and call `make my_target` in shell.
+	```Makefile
+	foo1 := $(foo2)
+	foo2 := $(my_var)
+
+	my_var := hi_var_value
+
+	bar1 := $(my_var)
+	bar2 := $(bar1)
+
+	# default make target
+	my_target:
+		@echo foo1 = $(foo1)
+		@echo foo2 = $(foo2)
+		@echo my_var = $(my_var)
+		@echo bar1 = $(bar1)
+		@echo bar2 = $(bar2)
+	```
+
+* If a file exists with a name of a target name then the target recipe is not processed. So to avoid this naming conflict we use `phony targets`. A `phony target` is declared like `.PHONY: a_phony_target`. When `make a_phony_target` is invoked then it skips checking for a file named `a_phony_target` and always process its recipe.
+
+* A `dir function` is called using `$(dir paths_of_files)`, which extracts the folder paths by removing the file names.
+
+* Try yourself
+
+	Write this into a Makefile and call `make my_target` in shell.
+	```Makefile
+	my_var = folder/file.a
+	my_new_var = $(dir $(my_var))
+
+	# default make target
+	my_target:
+		@echo my_var = $(my_var)
+		@echo my_new_var = $(my_new_var)
+	```
+
+* All objects files, dependency files and the final executable file are generated inside the `build` folder which is also known as `out-of-source` building.
