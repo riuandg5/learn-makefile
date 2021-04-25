@@ -643,3 +643,133 @@ HM of 6.000000 and 9.000000 = 7.200000
 		@echo bar1 = $(bar1)
 		@echo bar2 = $(bar2)
 	```
+
+#### Limitations to v5:
+* It is still not automated. We have to edit the `OBJS`, `DEPS` variables whenever we add or remove new files to the `src` folder. Even if we add more include directories we have to edit the recipe of `%.o` target specifying more include paths with `-I` prefix in `gcc` command.
+* Build process makes `*.o` and `*.d` files inside the `src` folder which is not a good practice as it clutters the `src` folder.
+
+### Makefile v6
+```Makefile
+# Variable to store name of final executable
+PROJECT_NAME = main
+
+# Variable to store name of src folder
+SRC_DIR = src
+# Variable to store names of include folders
+INC_DIRS = inc
+
+# Variable to store path of all sources
+SRCS = main.c $(shell find $(SRC_DIR) -name '*.c')
+# Variable to store path of all object files mapped from path of all sources
+OBJS = $(SRCS:.c=.o)
+# Variable to store path of all dependency files mapped from path of all objects
+DEPS = $(OBJS:.o=.d)
+
+# Variable to store name of default compiler
+CC = gcc
+# Variable to store include flags by prefixing -I to include folders
+INC_FLAGS = $(addprefix -I,$(INC_DIRS))
+# Vriable to store C preprocessor settings
+CPPFLAGS = $(INC_FLAGS) -MMD -MP
+# Variable to store linker flags
+LDFLAGS = -lm
+
+# Variable to store extension of final executable
+EXEC = out
+# Variable to store full name of final executable
+PROJECT_OUTPUT = $(PROJECT_NAME).$(EXEC)
+
+# default make target
+build: $(PROJECT_OUTPUT)
+
+# Build executable by linking object files
+$(PROJECT_OUTPUT): $(OBJS)
+	$(CC) $^ -o $@ $(LDFLAGS)
+
+# Compile C source files
+%.o: %.c
+	$(CC) $(CPPFLAGS) -c $< -o $@
+
+# Include dependencies generated from every c source file
+-include $(DEPS)
+
+run: build
+	./$(PROJECT_OUTPUT)
+
+clean:
+	rm -f $(PROJECT_OUTPUT)
+	rm -f $(OBJS)
+	rm -f $(DEPS)
+```
+
+#### Output:
+```shell
+⟩ make clean
+rm -f main.out
+rm -f main.o src/am.o src/gm.o src/hm/hm.o
+rm -f main.d src/am.d src/gm.d src/hm/hm.d
+
+⟩ make
+gcc -Iinc -MMD -MP -c main.c -o main.o
+gcc -Iinc -MMD -MP -c src/am.c -o src/am.o
+gcc -Iinc -MMD -MP -c src/gm.c -o src/gm.o
+gcc -Iinc -MMD -MP -c src/hm/hm.c -o src/hm/hm.o
+gcc main.o src/am.o src/gm.o src/hm/hm.o -o main.out -lm
+
+⟩ make run
+./main.out
+AM of 6.000000 and 9.000000 = 7.500000
+GM of 6.000000 and 9.000000 = 7.348469
+HM of 6.000000 and 9.000000 = 7.200000
+```
+* We invoked the `clean` target to remove the `main.out` program, object files (`*.o`) and dependency files (`*.d`).
+* We invoked the `build` target (by just calling `make` in the shell as it is the default make target) which depends on `main.out` hence invoked the `main.out` target to compile itself using object files. As these object files do not exist so they invoke compilation of C source codes in sequence which generates corresponding object file and dependency file. After having all object files ready, the linking recipe of `main.out` target is processed.
+* We invoked the `run` target which depends on the `build` target which itself depends on the `main.out` target which is up to date and hence directly processes the recipe of `run` target.
+
+#### Learning:
+* Nothing changed but the values for variables are generated using `functions` and hence no need to mention them manually. This brings automation in true sense.
+
+* A function call resembles a variable reference. It can appear anywhere a variable reference can appear, and it is expanded using the same rules as variable references. A function call looks like this `$(function_name arguments)`. There are many pre-defined functions in GNU make.
+
+* A `shell function` is called using `$(shell command)`, which does command expansion. It takes command as an argument and evaluates to the output of the command by converting each newline to a single space.
+
+* Try yourself
+
+	Write this into a Makefile and call `make my_target` in shell.
+	```Makefile
+	my_var = $(shell printf "hello\nworld")
+
+	# default make target
+	my_target:
+		@echo my_var = $(my_var)
+	```
+
+* A `addprefix function` is called using `$(addprefix prefix,names)`, which prepended `prefix` to the front of each individual name.
+
+* Try yourself
+
+	Write this into a Makefile and call `make my_target` in shell.
+	```Makefile
+	my_var = file_a folder_b
+	my_new_var = $(addprefix new_,$(my_var))
+
+	# default make target
+	my_target:
+		@echo my_var = $(my_var)
+		@echo my_new_var = $(my_new_var)
+	```
+
+* A `substitution reference` is called using `$(my_var:a=b)`, which takes the value of the variable `my_var`, replaces every `a` at the end of a word with `b` in that value, and substitutes the resulting string. It is shorthand for `$(patsubst %a,%b,my_var)` which is `pattern sustitution function`.
+
+* Try yourself
+
+	Write this into a Makefile and call `make my_target` in shell.
+	```Makefile
+	my_var = file_a folder_b
+	my_new_var = $(my_var:a=b)
+
+	# default make target
+	my_target:
+		@echo my_var = $(my_var)
+		@echo my_new_var = $(my_new_var)
+	```
