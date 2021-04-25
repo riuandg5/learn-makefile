@@ -540,3 +540,106 @@ HM of 6.000000 and 9.000000 = 7.200000
 * `include some_makefile` includes `some_makefile` inside the current Makefile.
 
 * `-include some_makefile` ignores `some_makefile` if it does not exists without any error.
+
+#### Limitations to v4:
+* It is still not automated. We have to edit the `main.out` dependency whenever we add or remove new files to the `src` folder. Even if we add more include directories we have to edit the recipe of `%.o` target specifying more include paths with `-I` prefix in `gcc` command.
+* Build process makes `*.o` and `*.d` files inside the `src` folder which is not a good practice as it clutters the `src` folder.
+
+### Makefile v5
+```Makefile
+# Variable to store name of final executable
+PROJECT_NAME = main
+
+# Variable to store all object files
+OBJS = main.o src/am.o src/gm.o src/hm/hm.o
+# Variable to store all dependency files
+DEPS = main.d src/am.d src/gm.d src/hm/hm.d
+
+# Default compiler
+CC = gcc
+# C preprocessor settings
+CPPFLAGS = -MMD -MP
+# Linker flags
+LDFLAGS = -lm
+
+# Variable to store extension of final executable
+EXEC = out
+# Variable to store full name of final executable
+PROJECT_OUTPUT = $(PROJECT_NAME).$(EXEC)
+
+# default make target
+build: $(PROJECT_OUTPUT)
+
+# Build executable by linking object files
+$(PROJECT_OUTPUT): $(OBJS)
+	$(CC) $^ -o $@ $(LDFLAGS)
+
+# Compile C source files
+%.o: %.c
+	$(CC) -Iinc $(CPPFLAGS) -c $< -o $@
+
+# Include dependencies generated from every c source file
+-include $(DEPS)
+
+run: build
+	./$(PROJECT_OUTPUT)
+
+clean:
+	rm -f $(PROJECT_OUTPUT)
+	rm -f $(OBJS)
+	rm -f $(DEPS)
+```
+
+#### Output:
+```shell
+⟩ make clean
+rm -f main.out
+rm -f main.o src/am.o src/gm.o src/hm/hm.o
+rm -f main.d src/am.d src/gm.d src/hm/hm.d
+
+⟩ make
+gcc -Iinc -MMD -MP -c main.c -o main.o
+gcc -Iinc -MMD -MP -c src/am.c -o src/am.o
+gcc -Iinc -MMD -MP -c src/gm.c -o src/gm.o
+gcc -Iinc -MMD -MP -c src/hm/hm.c -o src/hm/hm.o
+gcc main.o src/am.o src/gm.o src/hm/hm.o -o main.out -lm
+
+⟩ make run
+./main.out
+AM of 6.000000 and 9.000000 = 7.500000
+GM of 6.000000 and 9.000000 = 7.348469
+HM of 6.000000 and 9.000000 = 7.200000
+```
+* We invoked the `clean` target to remove the `main.out` program, object files (`*.o`) and dependency files (`*.d`).
+* We invoked the `build` target (by just calling `make` in the shell as it is the default make target) which depends on `main.out` hence invoked the `main.out` target to compile itself using given dependencies (`main.o src/am.o src/gm.o src/hm/hm.o`). As these object files do not exist so they invoke compilation of C source codes in sequence which generates corresponding object file and dependency file. After having all object files ready, the linking recipe of `main.out` target is processed.
+* We invoked the `run` target which depends on the `build` target which itself depends on the `main.out` target which is up to date and hence directly processes the recipe of `run` target.
+
+#### Learning:
+* Nothing changed but the use of variables made the rules look more generalized.
+
+* `var_name = var_value` is used to assign value to a variable.
+
+* To substitute a variable’s value, `$(var_name)` or `${var_name}` is used.
+
+* When `=` is used to assign values to variables, it is called recursively expanded variable. That is, it can be used to substitute values recursively.
+
+* Try yourself
+
+  Write this into a Makefile and call `make my_target` in shell.
+  ```Makefile
+  foo1 = $(foo2)
+  foo2 = $(my_var)
+
+  my_var = hi_var_value
+
+  bar1 = $(my_var)
+  bar2 = $(bar1)
+
+  # default make target
+  my_target:
+    @echo foo1 = $(foo1)
+    @echo foo2 = $(foo2)
+    @echo my_var = $(my_var)
+    @echo bar1 = $(bar1)
+    @echo bar2 = $(bar2)
+  ```
