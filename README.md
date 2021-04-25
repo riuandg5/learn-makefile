@@ -21,7 +21,7 @@ All files related to this example can be found in the folder named `c`. We have 
 We haven't stored the older versions of Makefile but you can read this documentation to know about the stepwise evolution or can compare the changes in commits.
 
 ### C project structure:
-```shell
+```console
 ⟩ tree --dirsfirst
 .
 ├── inc
@@ -168,7 +168,7 @@ clean:
 ```
 
 #### Output:
-```shell
+```console
 ⟩ make
 gcc main.c src/am.c src/gm.c src/hm/hm.c -Iinc -o main.out -lm
 
@@ -266,7 +266,7 @@ clean:
 ```
 
 #### Output:
-```shell
+```console
 ⟩ make clean
 rm -f main.out
 
@@ -347,7 +347,7 @@ clean:
 ```
 
 #### Output:
-```shell
+```console
 ⟩ make clean
 rm -f main.out
 
@@ -435,7 +435,7 @@ clean:
 ```
 
 #### Output:
-```shell
+```console
 ⟩ make clean
 rm -f main.out
 rm -f main.o src/am.o src/gm.o src/hm/hm.o
@@ -591,7 +591,7 @@ clean:
 ```
 
 #### Output:
-```shell
+```console
 ⟩ make clean
 rm -f main.out
 rm -f main.o src/am.o src/gm.o src/hm/hm.o
@@ -703,7 +703,7 @@ clean:
 ```
 
 #### Output:
-```shell
+```console
 ⟩ make clean
 rm -f main.out
 rm -f main.o src/am.o src/gm.o src/hm/hm.o
@@ -842,7 +842,7 @@ clean:
 ```
 
 #### Output:
-```shell
+```console
 ⟩ make clean
 rm -rf build
 
