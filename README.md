@@ -18,7 +18,7 @@ We will try to learn and understand the use of Makefile by writing our own for a
 
 All files related to this example can be found in the folder named `c`. We have updated the Makefile from a very basic version to the latest one explaining all the new things introduced.
 
-We haven't stored the older versions of Makefile but you can read this documentation to know about the stepwise evolution or can compare the changes in commits.
+All the versions of Makefile can be found in the folder named `versions`. Read this documentation further to know about the stepwise evolution.
 
 ### C project structure:
 ```console
