@@ -251,7 +251,7 @@ target:
 
 `recipe`: these are the instructions to run when the target is invoked.
 
-* Try yourself
+* **`Try Yourself`**
   
   * Write this into a Makefile and call `make my_target` in the shell.
 
@@ -320,7 +320,7 @@ target: dependencies or pre-requisites
 
 * A dependency of a target can be in itself a target. If a dependency exists or fulfills the pre-requisites then the main target recipe is processed directly else the dependency target is first invoked, processing its recipes and then the main target recipe is processed.
 
-* Try yourself
+* **`Try Yourself`**
 
   * Write this into a Makefile and call `make my_target` in shell.
 	
@@ -335,7 +335,7 @@ my_dependency:
 
 * `$^` is an automatic variable which has the names of all the prerequisites, with spaces between them. If you list a prerequisite more than once for a target, the value of `$^` will contain just one copy of the name.
 
-* Try yourself
+* **`Try Yourself`**
 
   * Write this into a Makefile and call `make my_target` in shell.
 	
@@ -423,7 +423,7 @@ HM of 5.000000 and 9.000000 = 6.428571
 
 * `$@` is an automatic variable which has the name of the target of the rule.
 
-* Try yourself
+* **`Try Yourself`**
 
   * Write this into a Makefile and call `make my_target` in shell.
 
@@ -562,7 +562,7 @@ inc/am.h:
 
 * `$<` is an automatic variable which has the name of the first prerequisite.
 
-* Try yourself
+* **`Try Yourself`**
 
   * Write this into a Makefile and call `make my_target` in shell.
 
@@ -669,7 +669,7 @@ HM of 6.000000 and 9.000000 = 7.200000
 
 * When `=` is used to assign values to variables, it is called recursively expanded variable. That is, it can be used to substitute values recursively.
 
-* Try yourself
+* **`Try Yourself`**
 
   * Write this into a Makefile and call `make my_target` in shell.
 	
@@ -785,7 +785,7 @@ HM of 6.000000 and 9.000000 = 7.200000
 
 * A `shell function` is called using `$(shell command)`, which does command expansion. It takes command as an argument and evaluates to the output of the command by converting each newline to a single space.
 
-* Try yourself
+* **`Try Yourself`**
 
   * Write this into a Makefile and call `make my_target` in shell
 
@@ -799,7 +799,7 @@ my_target:
 
 * A `addprefix function` is called using `$(addprefix prefix,names)`, which prepended `prefix` to the front of each individual name.
 
-* Try yourself
+* **`Try Yourself`**
 
   * Write this into a Makefile and call `make my_target` in shell.
 	
@@ -815,7 +815,7 @@ my_target:
 
 * A `substitution reference` is called using `$(my_var:a=b)`, which takes the value of the variable `my_var`, replaces every `a` at the end of a word with `b` in that value, and substitutes the resulting string. It is shorthand for `$(patsubst %a,%b,my_var)` which is `pattern sustitution function`.
 
-* Try yourself
+* **`Try Yourself`**
 
   * Write this into a Makefile and call `make my_target` in shell.
 	
@@ -930,7 +930,7 @@ HM of 6.000000 and 9.000000 = 7.200000
 
 * `var_name := var_value` is used to assign value to a variable like `=`. But when `:=` is used then variable is called simply expanded variable. That is, it cannot be used to substitute values recursively.
 
-* Try yourself
+* **`Try Yourself`**
 
   * Write this into a Makefile and call `make my_target` in shell
 
@@ -956,7 +956,7 @@ my_target:
 
 * A `dir function` is called using `$(dir paths_of_files)`, which extracts the folder paths by removing the file names.
 
-* Try yourself
+* **`Try Yourself`**
 
   * Write this into a Makefile and call `make my_target` in shell.
 
